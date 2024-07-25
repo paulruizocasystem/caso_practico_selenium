@@ -21,18 +21,51 @@ driver = webdriver.Chrome(service=service, options=options)
 #Acceder a la URL específica
 driver.get('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp')
 
-#Esperar hasta que el campo de RUC sea clicable y enviar el RUC
-WebDriverWait(driver, 5).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, 'input#txtRuc'))
-).send_keys('20612534242')
+#list = []
 
-# Esperar hasta que el botón de consulta sea clicable y hacer clic
-WebDriverWait(driver, 5).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.btn.btn-primary'))
-).click()
+#def tipo():
 
-# Pausar la ejecución para observar los resultados
-time.sleep(100)
+#funcion para buscar por ruc:
+def buscar_por_ruc(ruc):
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnPorRuc"))).click()
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtRuc"))).send_keys(ruc)
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnAceptar"))).click()
 
-#Cerrar el navegador
+#funcion para buscar por documento:
+def buscar_por_documento(tipo_documento, numero_documento):
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnPorDocumento"))).click()
+    if tipo_documento.lower() == 'documento nacional de identidad':
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtNumeroDocumento"))).send_keys(numero_documento)
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnAceptar"))).click()
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.list-group-item clearfix aRucs".replace(" ", ".")))).click()
+    
+    #WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "cmbTipoDoc"))).click()
+    
+
+
+
+#funcion para buscar por nombre o razon social:
+def buscar_por_nombre_razon_social(nombre_razon):
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnPorRazonSocial"))).click()
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtNombreRazonSocial"))).send_keys(nombre_razon)
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnAceptar"))).click()
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.list-group-item.clearfix.aRucs"))).click()
+
+
+"""# Ejemplo de uso
+buscar_por_ruc('20337564373')
+time.sleep(10)  # Tiempo para observar los resultados"""
+
+"""#Ejemplo de uso
+buscar_por_nombre_razon_social('TIENDAS POR DEPARTAMENTO RIPLEY S.A.C.')
+time.sleep(10)  # Tiempo para observar los resultados"""
+
+#Ejemplo de uso
+buscar_por_documento('Documento Nacional de Identidad', '46878365')
+time.sleep(10)  # Tiempo para observar los resultados
+
+# Cerrar el navegador
 driver.quit()
+
+
+
