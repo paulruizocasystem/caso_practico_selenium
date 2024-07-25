@@ -1,6 +1,6 @@
 from selenium import webdriver #Importar el módulo de WebDriver para controlar el navegador
 from selenium.webdriver.chrome.service import Service #Importar el módulo de servicio para especificar la ruta del chromedriver
-from selenium.webdriver.support.ui import WebDriverWait #Importar WebDriverWait para manejar esperas explícitas
+from selenium.webdriver.support.ui import WebDriverWait, Select #Importar WebDriverWait para manejar esperas explícitas
 from selenium.webdriver.support import expected_conditions as EC #Importar condiciones esperadas para las esperas
 from selenium.webdriver.common.by import By # Importar By para seleccionar elementos por
 import time #Importar time para usar sleep y pausar la ejecución
@@ -21,10 +21,6 @@ driver = webdriver.Chrome(service=service, options=options)
 #Acceder a la URL específica
 driver.get('https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp')
 
-#list = []
-
-#def tipo():
-
 #funcion para buscar por ruc:
 def buscar_por_ruc(ruc):
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnPorRuc"))).click()
@@ -34,15 +30,22 @@ def buscar_por_ruc(ruc):
 #funcion para buscar por documento:
 def buscar_por_documento(tipo_documento, numero_documento):
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnPorDocumento"))).click()
+    select = Select(WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "cmbTipoDoc"))))
+
     if tipo_documento.lower() == 'documento nacional de identidad':
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtNumeroDocumento"))).send_keys(numero_documento)
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnAceptar"))).click()
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.list-group-item clearfix aRucs".replace(" ", ".")))).click()
-    
-    #WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "cmbTipoDoc"))).click()
-    
+    elif tipo_documento.lower() == 'carnet de extranjeria':
+        select.select_by_value('4')  # Usando el atributo value para Carnet de Extranjeria
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtNumeroDocumento"))).send_keys(numero_documento)
+    elif tipo_documento.lower() == 'pasaporte':
+        select.select_by_value('7')  # Valor para Pasaporte
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtNumeroDocumento"))).send_keys(numero_documento)
+    elif tipo_documento.lower() == 'cedula diplomatica de identidad':
+        select.select_by_value('A')  # Valor para Cedula Diplomática de Identidad
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "txtNumeroDocumento"))).send_keys(numero_documento)
 
-
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "btnAceptar"))).click()
+    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a.list-group-item.clearfix.aRucs"))).click()
 
 #funcion para buscar por nombre o razon social:
 def buscar_por_nombre_razon_social(nombre_razon):
@@ -61,7 +64,7 @@ buscar_por_nombre_razon_social('TIENDAS POR DEPARTAMENTO RIPLEY S.A.C.')
 time.sleep(10)  # Tiempo para observar los resultados"""
 
 #Ejemplo de uso
-buscar_por_documento('Documento Nacional de Identidad', '46878365')
+buscar_por_documento('Carnet de Extranjeria', '001077238')
 time.sleep(10)  # Tiempo para observar los resultados
 
 # Cerrar el navegador
